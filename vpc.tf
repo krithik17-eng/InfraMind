@@ -3,6 +3,8 @@
 	Create a VPC with CIDR 172.17.0.0/16 from Variables.tf
 */
 
+
+
 resource "aws_vpc" "infra_mind_vpc" {
   cidr_block  = var.infra_mind_vpc_cidr
   enable_dns_hostnames = true
@@ -36,6 +38,7 @@ resource "aws_internet_gateway" "infra_mind_igw" {
 resource "aws_subnet" "infra_mind_public_subnet" {
   vpc_id = aws_vpc.infra_mind_vpc.id
   cidr_block = var.infra_mind_public_subnet_cidr
+  availability_zone = var.availbility_zone_1
   map_public_ip_on_launch = false
   tags = {
     Name = "InfraMindPublicSubnet"
@@ -52,6 +55,7 @@ resource "aws_subnet" "infra_mind_public_subnet" {
 resource "aws_subnet" "infra_mind_private_subnet" {
   vpc_id = aws_vpc.infra_mind_vpc.id
   cidr_block = var.infra_mind_private_subnet_cidr
+  availability_zone = var.availbility_zone_2
   map_public_ip_on_launch = false
   tags = {
     Name = "InfraMindPrivateSubnet"
