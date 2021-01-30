@@ -35,12 +35,22 @@ resource "aws_instance" "infra_mind_ansible_ec2" {
 	key_name = var.key_name
 	subnet_id = aws_subnet.infra_mind_public_subnet.id
 	vpc_security_group_ids = [aws_security_group.infra_mind_ansible_sg.id]
-
-    user_data = file("install_ansible.sh")
-
+    
+    user_data = << EOF
+        #! /bin/bash
+        sudo apt update
+        sudo apt install software-properties-common
+        sudo apt-add-repository --yes --update ppa:ansible/ansible
+        sudo apt install ansible
+    EOF
+    
 	tags =  {
         Name = "Ansible"
     }
-
-
 }
+
+resource "aws_eip" "infra_mind_ansible_ec2_eip" {
+  instance = aws_instance.infra_mind_ansible_ec2.id
+  vpc      = true
+}
+

@@ -36,9 +36,6 @@ resource "aws_instance" "infra_mind_wordpress_ec2" {
 	key_name = var.key_name
 	subnet_id = aws_subnet.infra_mind_public_subnet.id
 	vpc_security_group_ids = [aws_security_group.infra_mind_wordpress_sg.id]
-
-	user_data = file("install_apache.sh")
-	
 	tags =  {
         Name = "Wordpress"
     }

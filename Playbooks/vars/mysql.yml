@@ -1,0 +1,6 @@
+#MySQL Settings
+mysql_host: "172.17.12.3"
+mysql_wordpress_db: "inframind"
+mysql_root_password: "InfraRoot@123"
+mysql_wordpress_user: "inframind"
+mysql_wordpress_password: "InfraWordpress@123"
