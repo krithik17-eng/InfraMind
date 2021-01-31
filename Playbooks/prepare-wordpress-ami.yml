@@ -1,0 +1,9 @@
+---
+- hosts: wordpress
+  become: yes
+  tasks:
+
+    # Enable Apache Service (Auto Start on Boot)
+    - name: Enable Apache Service on Boot
+      service: apache2
+        enabled: yes
