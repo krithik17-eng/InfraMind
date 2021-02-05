@@ -4,8 +4,8 @@ ansible_ssh_private_key_file=./InfraMind.pem
 ansible_become=yes
 
 [wordpress]
-172.17.12.14
+172.17.1.15
 
 [mysql]
-172.17.12.15
+172.17.2.234
 

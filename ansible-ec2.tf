@@ -36,14 +36,6 @@ resource "aws_instance" "infra_mind_ansible_ec2" {
 	subnet_id = aws_subnet.infra_mind_public_subnet.id
 	vpc_security_group_ids = [aws_security_group.infra_mind_ansible_sg.id]
     
-    user_data = << EOF
-        #! /bin/bash
-        sudo apt update
-        sudo apt install software-properties-common
-        sudo apt-add-repository --yes --update ppa:ansible/ansible
-        sudo apt install ansible
-    EOF
-    
 	tags =  {
         Name = "Ansible"
     }

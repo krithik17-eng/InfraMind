@@ -13,6 +13,14 @@ resource "aws_security_group" "infra_mind_mysql_sg" {
         security_groups = [aws_security_group.infra_mind_wordpress_sg.id]
     }
 
+    ingress {
+        description = "Allow All Traffic from Ansible SG"
+        from_port   = 0
+        to_port     = 0
+        protocol    = "-1"
+        security_groups = [aws_security_group.infra_mind_ansible_sg.id]
+    }
+
     egress {
         from_port   = 0
         to_port     = 0

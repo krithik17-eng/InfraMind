@@ -76,7 +76,7 @@ resource "aws_route_table" "public_route_table" {
 	}
 	tags = {
     	Name = "InfraMindPublicRouteTable"
-  	}
+  }
 }
 
 
