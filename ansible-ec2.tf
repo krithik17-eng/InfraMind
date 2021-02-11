@@ -28,13 +28,19 @@ resource "aws_security_group" "infra_mind_ansible_sg" {
 }
 
 
-resource "aws_instance" "infra_mind_ansible_ec2" {
+data "template_file" "install_ansible_ubuntu" {
+  template = file("templates/install_ansible_ubuntu.tpl")
+}
 
+
+resource "aws_instance" "infra_mind_ansible_ec2" {
+    
 	ami = var.ami_id
 	instance_type = var.instance_type
 	key_name = var.key_name
 	subnet_id = aws_subnet.infra_mind_public_subnet.id
 	vpc_security_group_ids = [aws_security_group.infra_mind_ansible_sg.id]
+    user_data = data.template_file.install_ansible_ubuntu.rendered
     
 	tags =  {
         Name = "Ansible"

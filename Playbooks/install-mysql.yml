@@ -43,9 +43,21 @@
         name: "{{ mysql_wordpress_user }}"
         password: "{{ mysql_wordpress_password }}"
         priv: "{{ mysql_wordpress_db }}.*:ALL"
+        host: "%"
         state: present
         login_user: root
         login_password: "{{ mysql_root_password }}"
+
+    - name: Comment out bind address in MySQL Config
+      replace:
+        dest:  /etc/mysql/mysql.conf.d/mysqld.cnf
+        regexp: '^bind-address'
+        replace: '#bind-address'
+
+    - name: Restart the MySQL Service
+      service:
+        name: mysql
+        state: restarted
 
   # Firewall Configuration
     - name: "UFW - Allow MYSQL on port 3306"

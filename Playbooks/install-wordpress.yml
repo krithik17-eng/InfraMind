@@ -5,44 +5,35 @@
     - vars/mysql.yml
   tasks:
 
-    # Prerequisites Installation
-    - name: Install prerequisites
-      apt: name=aptitude update_cache=yes state=latest force_apt_get=yes
+    #PHP 7.4 Prerequisites in Ubuntu
+    - name: Install Software Properties Common
+      apt:
+        name: software-properties-common
+        state: present
 
+    - name: Add PHP 7.4 Repo 
+      apt_repository:
+        repo: 'ppa:ondrej/php'
+        state: present
+
+    - name: apt update after the repo addition
+      apt:
+        update_cache: yes
+
+    # Prerequisites Installation
     - name: Install LAMP Packages
       apt: name={{ item }} update_cache=yes state=latest
-      loop: ['apache2','php', 'php-mysql', 'libapache2-mod-php']
+      loop: ['apache2','php7.4', 'php7.4-mysql', 'libapache2-mod-php7.4']
 
     - name: Install PHP Extensions
       apt: name={{ item }} update_cache=yes state=latest
-      loop: [ 'php-curl', 'php-gd', 'php-mbstring', 'php-xml', 'php-xmlrpc', 'php-soap', 'php-intl', 'php-zip' ]
+      loop: [ 'php7.4-curl', 'php7.4-gd', 'php7.4-mbstring', 'php7.4-xml', 'php7.4-xmlrpc', 'php7.4-soap', 'php7.4-intl', 'php7.4-zip' ]
 
   # Apache Configuration
-    - name: Create document root
+    - name: Delete the index.html file
       file:
-        path: "/var/www/inframind"
-        state: directory
-        owner: "www-data"
-        group: "www-data"
-        mode: '0755'
-
-    - name: Set up Apache VirtualHost
-      template:
-        src: "files/apache.conf.j2"
-        dest: "/etc/apache2/sites-available/inframind.conf"
-      notify: Reload Apache
-
-    - name: Enable rewrite module
-      shell: /usr/sbin/a2enmod rewrite
-      notify: Reload Apache
-
-    - name: Enable new site
-      shell: /usr/sbin/a2ensite inframind.conf
-      notify: Reload Apache
-
-    - name: Disable default Apache site
-      shell: /usr/sbin/a2dissite 000-default.conf
-      notify: Restart Apache
+        path: "/var/www/html/index.html"
+        state: absent
 
   # Firewall Configuration
     - name: "UFW - Allow HTTP on port 80"
@@ -55,28 +46,31 @@
     - name: Download and unpack latest WordPress
       unarchive:
         src: https://wordpress.org/latest.tar.gz
-        dest: "/var/www/inframind"
+        dest: "/var/www/html"
         remote_src: yes
-        creates: "/var/www/inframind/wordpress"
+
+    - name: Move Wordpress Directory contents 
+      command: mv /var/www/html/wordpress/* /var/www/html/
 
     - name: Set ownership
       file:
-        path: "/var/www/inframind"
+        path: "/var/www/html"
         state: directory
         recurse: yes
         owner: www-data
         group: www-data
 
     - name: Set permissions for directories
-      shell: "/usr/bin/find /var/www/inframind/wordpress/ -type d -exec chmod 750 {} \\;"
+      shell: "/usr/bin/find /var/www/html/ -type d -exec chmod 755 {} \\;"
 
     - name: Set permissions for files
-      shell: "/usr/bin/find /var/www/inframind/wordpress/ -type f -exec chmod 640 {} \\;"
+      shell: "/usr/bin/find /var/www/html/ -type f -exec chmod 644 {} \\;"
 
     - name: Set up wp-config
       template:
         src: "files/wp-config.php.j2"
-        dest: "/var/www/inframind/wordpress/wp-config.php"
+        dest: "/var/www/html/wp-config.php"
+      notify: Restart Apache
 
   handlers:
     - name: Reload Apache
