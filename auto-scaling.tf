@@ -13,8 +13,12 @@ resource "aws_launch_template" "infra_mind_wordpress_launch_template" {
 	image_id = aws_ami_from_instance.infra_mind_wordpress_ami.id
 	instance_type = var.instance_type
 	key_name = var.key_name
-	vpc_security_group_ids = [aws_security_group.infra_mind_wordpress_sg.id]
-	subnet_id = aws_subnet.infra_mind_public_subnet.id
+	
+	network_interfaces {
+		subnet_id = aws_subnet.infra_mind_public_subnet.id
+		security_groups =  [aws_security_group.infra_mind_wordpress_sg.id]
+	}
+
 	tags =  {
         Name = "WordpressLaunchTemplate"
   }
@@ -39,18 +43,12 @@ resource "aws_autoscaling_group" "infra_mind_wordpress_autoscaling_group" {
   tag {
     key = "Name"
     value = "WordpresAutoscalingGroup"
+    propagate_at_launch = true
    }
 }
 
 
-#resource "aws_autoscaling_policy" "infra_mind_wordpress_autoscaling_policy" {
-#	name = "WordpresAutoscalingPolicy"
-#	scaling_adjustment = 1
-#	adjustment_type = "ChangeInCapacity"
-#	cooldown = 300
-#	policy_type = "SimpleScaling"
-#	autoscaling_group_name = aws_autoscaling_group.infra_mind_wordpress_autoscaling_group.name
-#}
+
 
 resource "aws_autoscaling_policy" "infra_mind_wordpress_autoscaling_policy_scale_up" {
     name = "WordpresAutoscalingPolicyScaleUp"
